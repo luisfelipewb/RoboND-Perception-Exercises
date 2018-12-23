@@ -43,7 +43,22 @@ filename = 'pass_through_filtered.pcd'
 pcl.save(cloud_filtered, filename)
 
 # RANSAC plane segmentation
+seg = cloud_filtered.make_segmenter()
 
+seg.set_model_type(pcl.SACMODEL_PLANE)
+seg.set_method_type(pcl.SAC_RANSAC)
+
+max_distance = 0.02
+seg.set_distance_threshold(max_distance)
+inliers, coefficients = seg.segment()
+
+extracted_inliers = cloud_filtered.extract(inliers, negative=False)
+filename = 'ransac_inliers.pcd'
+pcl.save(extracted_inliers, filename)
+
+extracted_outliers = cloud_filtered.extract(inliers, negative=True)
+filename = 'ransac_outliers.pcd'
+pcl.save(extracted_outliers, filename)
 
 # Extract inliers
 

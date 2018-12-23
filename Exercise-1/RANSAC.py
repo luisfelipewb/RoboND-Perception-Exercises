@@ -52,23 +52,26 @@ max_distance = 0.02
 seg.set_distance_threshold(max_distance)
 inliers, coefficients = seg.segment()
 
+# Extract inliers
 extracted_inliers = cloud_filtered.extract(inliers, negative=False)
 filename = 'ransac_inliers.pcd'
 pcl.save(extracted_inliers, filename)
 
+# Extract outliers
 extracted_outliers = cloud_filtered.extract(inliers, negative=True)
 filename = 'ransac_outliers.pcd'
 pcl.save(extracted_outliers, filename)
 
-# Extract inliers
+cloud_filtered = extracted_outliers
 
-# Save pcd for table
-# pcl.save(cloud, filename)
+# Outlier Removal Filter (not needed in this example)
 
+outlier_filter = cloud_filtered.make_statistical_outlier_filter()
+outlier_filter.set_mean_k(50)
+x = 1.0
+outlier_filter.set_std_dev_mul_thresh(x)
 
-# Extract outliers
-
-
-# Save pcd for tabletop objects
-
+cloud_filtered = outlier_filter.filter()
+filename = 'outlier_filtered.pcd'
+pcl.save(cloud_filtered, filename)
 

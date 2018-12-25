@@ -9,26 +9,42 @@ from pcl_helper import *
 def pcl_callback(pcl_msg):
 
     # TODO: Convert ROS msg to PCL data
+    pcl_data = ros_to_pcl(pcl_msg)
 
-    # TODO: Voxel Grid Downsampling
+    # TODO: Voxel Grid Downsampling 
+    vox = pcl_data.make_voxel_grid_filter()
+    vox.set_leaf_size(0.01,0.01,0.01)
+    cloud_filtered = vox.filter()
 
     # TODO: PassThrough Filter
-
+    passthrough = cloud_filtered.make_passthrough_filter()
+    passthrough.set_filter_field_name('z')
+    passthrough.set_filter_limits(0.75,1.1)
+    cloud_filtered = passthrough.filter()
 
     # TODO: RANSAC Plane Segmentation
+    seg = cloud_filtered.make_segmenter()
+    seg.set_model_type(pcl.SACMODEL_PLANE)
+    seg.set_method_type(pcl.SAC_RANSAC)
+    seg.set_distance_threshold(0.02)
 
     # TODO: Extract inliers and outliers
+    inliers, coefficients = seg.segment()
+    cloud_table = cloud_filtered.extract(inliers, negative=False)
+    cloud_objects = cloud_filtered.extract(inliers, negative=True)
 
     # TODO: Euclidean Clustering
 
     # TODO: Create Cluster-Mask Point Cloud to visualize each cluster separately
 
     # TODO: Convert PCL data to ROS messages
+    ros_cloud_object = pcl_to_ros(cloud_objects)
+    ros_cloud_table = pcl_to_ros(cloud_table)
 
     # TODO: Publish ROS messages
 
-    pcl_objects_pub.publish(pcl_msg)
-    pcl_table_pub.publish(pcl_msg)
+    pcl_objects_pub.publish(ros_cloud_object)
+    pcl_table_pub.publish(ros_cloud_table)
 
 if __name__ == '__main__':
 

@@ -39,7 +39,7 @@ if __name__ == '__main__':
     for model_name in models:
         spawn_model(model_name)
 
-        for i in range(5):
+        for i in range(500):
             # make five attempts to get a valid a point cloud then give up
             sample_was_good = False
             try_count = 0
@@ -60,6 +60,7 @@ if __name__ == '__main__':
             nhists = compute_normal_histograms(normals)
             feature = np.concatenate((chists, nhists))
             labeled_features.append([feature, model_name])
+            print("Model: "+model_name+" iteration: "+ str(i))
 
         delete_model()
 

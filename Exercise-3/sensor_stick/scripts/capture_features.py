@@ -53,6 +53,7 @@ if __name__ == '__main__':
                     try_count += 1
                 else:
                     sample_was_good = True
+            print("Model: "+model_name+" iteration: "+ str(i))
 
             # Extract histogram features
             chists = compute_color_histograms(sample_cloud, using_hsv=False)
@@ -60,7 +61,6 @@ if __name__ == '__main__':
             nhists = compute_normal_histograms(normals)
             feature = np.concatenate((chists, nhists))
             labeled_features.append([feature, model_name])
-            print("Model: "+model_name+" iteration: "+ str(i))
 
         delete_model()
 
